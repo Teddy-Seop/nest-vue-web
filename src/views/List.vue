@@ -19,27 +19,31 @@
 
 <script>
 import Vue from "vue";
-import Component from 'vue-class-component';
+import Component from "vue-class-component";
 
 @Component
 export default class List extends Vue {
-  posts = [
-    {
-      title: "Title1",
-      writer: "Writer1"
-    },
-    {
-      title: "Title2",
-      writer: "Writer2"
-    },
-    {
-      title: "Title3",
-      writer: "Writer3"
-    },
-  ]
+  posts = [];
+
+  created() {
+    this.posts = this.$store.dispatch("getPosts");
+    console.log(this.posts);
+  }
+  // posts = [
+  //   {
+  //     title: "Title1",
+  //     writer: "Writer1",
+  //   },
+  //   {
+  //     title: "Title2",
+  //     writer: "Writer2",
+  //   },
+  //   {
+  //     title: "Title3",
+  //     writer: "Writer3",
+  //   },
+  // ];
 }
 </script>
 
-<style>
-
-</style>
+<style></style>
