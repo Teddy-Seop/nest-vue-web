@@ -32,8 +32,10 @@ export default class Write extends Vue {
     const post = {
       title: this.title,
       contents: this.contents,
+      userId: 1
     };
     this.$store.dispatch("submitPost", post);
+    this.$router.push("List");
   }
 }
 </script>

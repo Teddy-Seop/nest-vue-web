@@ -3,8 +3,8 @@
     <template v-slot:default>
       <thead>
         <tr>
-          <th class="text-left">Name</th>
-          <th class="text-left">Calories</th>
+          <th class="text-left">Title</th>
+          <th class="text-left">User</th>
         </tr>
       </thead>
       <tbody>
@@ -25,24 +25,11 @@ import Component from "vue-class-component";
 export default class List extends Vue {
   posts = [];
 
-  created() {
-    this.posts = this.$store.dispatch("getPosts");
-    console.log(this.posts);
+  async created() {
+    await this.$store.dispatch("getPosts").then((res) => {
+      this.posts = res;
+    });
   }
-  // posts = [
-  //   {
-  //     title: "Title1",
-  //     writer: "Writer1",
-  //   },
-  //   {
-  //     title: "Title2",
-  //     writer: "Writer2",
-  //   },
-  //   {
-  //     title: "Title3",
-  //     writer: "Writer3",
-  //   },
-  // ];
 }
 </script>
 
