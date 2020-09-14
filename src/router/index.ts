@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import List from "../views/List.vue";
 import Mypage from "../views/Mypage.vue";
 import Write from '@/components/Write.vue';
+import Post from '@/components/Post.vue';
 
 Vue.use(VueRouter);
 
@@ -31,6 +32,11 @@ const routes: Array<RouteConfig> = [
     name: "Write",
     component: Write,
   },
+  {
+    path: "/post/:id",
+    name: "Post",
+    component: Post,
+  }
 ];
 
 const router = new VueRouter({

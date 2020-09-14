@@ -8,9 +8,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in posts" :key="item.name">
+        <tr v-for="item in posts" :key="item.name" @click="movePost">
           <td>{{ item.title }}</td>
-          <td>{{ item.writer }}</td>
+          <td>{{ item.user.name }}</td>
         </tr>
       </tbody>
     </template>
@@ -29,6 +29,10 @@ export default class List extends Vue {
     await this.$store.dispatch("getPosts").then((res) => {
       this.posts = res;
     });
+  }
+
+  async movePost() {
+    this.$router.push({ name: "Post", params: { id: 1 } })
   }
 }
 </script>
