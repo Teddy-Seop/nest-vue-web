@@ -2,12 +2,12 @@
   <div>
     <v-container>
       <v-row class="ma-10">
-          <v-card>
+          <v-card class="mx-auto" max-width="344" outlined>
               <v-card-title>
-                {{ this.title }}
+                {{ post }}
               </v-card-title>
               <v-card-text>
-                {{ this.contents }}
+                <!-- {{ this.post.contents }} -->
               </v-card-text>
           </v-card>
       </v-row>
@@ -18,25 +18,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 import router from '../router/index';
 
-@Component()
+@Component
 export default class Post extends Vue{
-    postId;
-    title = "";
-    contents = "";
+    private postId: number;
+    private post: Posts.IPost;
 
-    beforeCreate() {
-        this.postId = this.$route.params.id;
-    }
-
-    created() {
-        this.$store.dispatch('getPost', this.postId).then(res => {
-            
-        })
+    async beforeCreate() {
+      this.postId = Number(this.$route.params.id);
+      this.post = await this.$store.dispatch('getPost', this.postId);
+      console.log(this.post);
     }
 }
 </script>

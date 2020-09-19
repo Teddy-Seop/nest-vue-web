@@ -17,13 +17,13 @@
   </v-simple-table>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 
 @Component
 export default class List extends Vue {
-  posts = [];
+  private posts: Posts.IPost[];
 
   async created() {
     await this.$store.dispatch("getPosts").then((res) => {
