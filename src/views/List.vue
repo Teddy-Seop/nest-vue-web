@@ -8,7 +8,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in posts" :key="item.name" @click="movePost">
+        <tr v-for="item in posts" :key="item.id" @click="movePost(item.id)">
           <td>{{ item.title }}</td>
           <td>{{ item.user.name }}</td>
         </tr>
@@ -20,19 +20,21 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { IPost } from "@/types/post";
 
 @Component
 export default class List extends Vue {
-  private posts: Posts.IPost[];
+  private posts: IPost[] = [];
 
   async created() {
-    await this.$store.dispatch("getPosts").then((res) => {
+    await this.$store.dispatch("getPosts").then(res => {
       this.posts = res;
     });
+    console.log(this.posts);
   }
 
-  async movePost() {
-    this.$router.push({ name: "Post", params: { id: 1 } })
+  async movePost(id: string) {
+    this.$router.push({ name: "Post", params: { id: id } });
   }
 }
 </script>
