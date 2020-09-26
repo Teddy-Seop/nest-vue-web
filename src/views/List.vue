@@ -30,7 +30,6 @@ export default class List extends Vue {
     await this.$store.dispatch("getPosts").then(res => {
       this.posts = res;
     });
-    console.log(this.posts);
   }
 
   async movePost(id: string) {

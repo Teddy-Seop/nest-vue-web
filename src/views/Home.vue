@@ -41,25 +41,29 @@
 
     <v-app-bar app clipped-left color="black">
       <v-app-bar-nav-icon class="mr7" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-row align="center" style="max-width: 450px">
-        <v-text-field
-          :append-icon-cb="() => {}"
-          placeholder="Search..."
-          single-line
-          append-icon="mdi-magnify"
-          color="white"
-          hide-details
-          class="ml-7"
-        ></v-text-field>
-      </v-row>
-      <v-spacer></v-spacer>
-      <v-row class="justify-end mr-7" link>
-        <v-btn icon @click="write">
-          <v-icon large>mdi-pencil-box-outline</v-icon>
-        </v-btn>
+      <v-row align="center">
+        <v-col cols="5">
+          <v-text-field
+            :append-icon-cb="() => {}"
+            placeholder="Search..."
+            single-line
+            append-icon="mdi-magnify"
+            color="white"
+            hide-details
+            class="ml-7"
+          ></v-text-field>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="2">
+          <v-btn icon @click="write">
+            <v-icon large>mdi-pencil-box-outline</v-icon>
+          </v-btn>
+          <v-btn class="ml-5" icon @click="logout">
+            <v-icon large>mdi-power</v-icon>
+          </v-btn>
+        </v-col>
       </v-row>
     </v-app-bar>
-
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -92,6 +96,12 @@ export default class Home extends Vue {
 
   write() {
     this.$router.push("/write");
+  }
+
+  logout() {
+    localStorage.removeItem("userId", this.$store.getters.getUserInfo.id);
+    localStorage.removeItem("accessToken", this.$store.getters.getUserInfo.accessToken);
+    this.$router.push('/');
   }
 }
 </script>

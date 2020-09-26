@@ -19,12 +19,15 @@ export default class Login extends Vue {
   private password = "";
 
   private async submit() {
-    const user = await this.$store.dispatch("login", {
+    const result = await this.$store.dispatch("login", {
       email: this.email,
       password: this.password
     });
-    if (user) {
-      this.$router.push("/home");
+
+    if (this.$store.getters.getUserInfo.id !== '') {
+      localStorage.setItem("userId", this.$store.getters.getUserInfo.id);
+      localStorage.setItem("accessToken", this.$store.getters.getUserInfo.accessToken);
+      this.$router.push("home");
     }
   }
 }

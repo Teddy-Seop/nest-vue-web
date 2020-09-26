@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { IPost } from '@/types/post';
 
 const actions = {
   getPosts: (context: any, text?: string) => {
@@ -9,9 +10,13 @@ const actions = {
     return Axios.get(`http://localhost:3000/posts/${id}`).then((res) => res.data);
   },
 
-  submitPost: (context: any, post: any) => {
+  submitPost: (context: any, post: IPost) => {
     return Axios.post(`http://localhost:3000/posts/`, post);
   },
+
+  deletePost: (context: any, id: number) => {
+    return Axios.delete(`http://localhost:3000/posts/${id}`).then(res => res.data);
+  }
 };
 
 export default {
