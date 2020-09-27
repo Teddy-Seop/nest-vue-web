@@ -6,7 +6,6 @@ import List from "../views/List.vue";
 import Mypage from "../views/Mypage.vue";
 import Write from "@/components/Write.vue";
 import Post from "@/components/Post.vue";
-import store from '@/store';
 
 Vue.use(VueRouter);
 
@@ -28,7 +27,7 @@ const routes: Array<RouteConfig> = [
     name: "Home",
     component: Home,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem("userId") === null && localStorage.getItem("accessToken") !== store.getters.getUserInfo.accessToken) {
+      if (localStorage.getItem("userId") === null) {
         next("/");
       } else {
         next();

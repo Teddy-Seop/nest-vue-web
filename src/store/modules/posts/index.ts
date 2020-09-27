@@ -16,6 +16,9 @@ const actions = {
 
   deletePost: (context: any, id: number) => {
     return Axios.delete(`http://localhost:3000/posts/${id}`).then(res => res.data);
+  },
+  editPost: (context: any, post: IPost) => {
+    return Axios.put(`http://localhost:3000/posts/${post.id}`, post).then(res => res.data);
   }
 };
 

@@ -7,7 +7,7 @@ import Axios from 'axios';
 
 Vue.config.productionTip = false;
 
-Axios.defaults.headers.common['Authorization'] = localStorage.getItem('access_token') || '';
+Axios.defaults.headers.common['Authorization'] = localStorage.getItem('accessToken') || '';
 
 new Vue({
   router,
