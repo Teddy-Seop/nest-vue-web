@@ -19,23 +19,37 @@
   </v-form>
 </template>
 
-<script>
+<script lang="ts">
+import { IPost } from '@/types/post';
 import Vue from "vue";
 import Component from "vue-class-component";
 
-@Component()
+@Component
 export default class Write extends Vue {
   title = "";
   contents = "";
 
-  submit() {
+  private async mounted() {
+    if (this.$route.params.postId) {
+      await this.editSetting(Number(this.$route.params.postId));
+    }
+  }
+
+  private submit() {
     const post = {
+      id: Number(this.$route.params.postId),
       title: this.title,
       contents: this.contents,
-      userId: 1
+      userId: localStorage.getItem("userId"),
     };
     this.$store.dispatch("submitPost", post);
     this.$router.push("List");
+  }
+
+  private async editSetting(postId: number) {
+    const post: IPost = await this.$store.dispatch("getPost", postId);
+    this.title = post.title;
+    this.contents = post.contents;
   }
 }
 </script>

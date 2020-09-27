@@ -44,7 +44,7 @@ export default class Post extends Vue {
   }
 
   private async editPost() {
-    console.log("edit post");
+    this.$router.push({ name: 'Write', params: { postId: this.postId.toString() } });
   }
 
   private async deletePost() {
