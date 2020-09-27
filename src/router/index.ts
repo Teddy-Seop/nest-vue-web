@@ -14,25 +14,13 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Login",
     component: Login,
-    beforeEnter: (to, from, next) => {
-      if (localStorage.getItem("userId") !== null) {
-        next("/home");
-      } else {
-        next();
-      }
-    }
+    meta: { requireAuth: false },
   },
   {
     path: "/home",
     name: "Home",
     component: Home,
-    beforeEnter: (to, from, next) => {
-      if (localStorage.getItem("userId") === null) {
-        next("/");
-      } else {
-        next();
-      }
-    },
+    meta: { requireAuth: true },
     children: [
       // views
       {
@@ -61,10 +49,27 @@ const routes: Array<RouteConfig> = [
   },
 ];
 
+
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requireAuth)) {
+    if (localStorage.getItem("userId") === null || Vue.$cookies.get("access_token") === null) {
+      next("/");
+    } else {
+      next();
+    }
+  } else {
+    if (localStorage.getItem("userId") !== null && Vue.$cookies.get("access_token")) {
+      next("/home");
+    } else {
+      next();
+    }
+  }
 });
 
 export default router;

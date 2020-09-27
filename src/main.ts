@@ -4,10 +4,12 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import Axios from 'axios';
+import vueCookie from 'vue-cookies';
 
+Vue.use(vueCookie);
 Vue.config.productionTip = false;
 
-Axios.defaults.headers.common['Authorization'] = localStorage.getItem('accessToken') || '';
+Axios.defaults.headers.common['Authorization'] = Vue.$cookies.get("access_token") || '';
 
 new Vue({
   router,
