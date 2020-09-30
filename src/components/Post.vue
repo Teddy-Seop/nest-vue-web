@@ -7,10 +7,16 @@
         </div>
         <v-divider></v-divider>
         <div class="mt-12 contents">{{ this.post.contents }}</div>
-        <div v-if="isWriter" class="float-right">
+        <v-divider></v-divider>
+        <v-row v-if="isWriter">
+          <v-col class="float-left">
+            <v-btn icon @click="like()"><v-icon>mdi-heart</v-icon></v-btn>
+          </v-col>
+          <v-col class="float-right">
             <v-btn class="ma-2" @click="editPost()">EDIT</v-btn>
             <v-btn class="ma-2" @click="deletePost()">DELETE</v-btn>
-          </div>
+          </v-col>
+        </v-row>
       </v-card>
     </v-container>
   </div>
@@ -22,6 +28,7 @@ import Component from "vue-class-component";
 import router from "../router/index";
 
 import { IPost } from "@/types/post";
+import { ILikes } from '../types/likes';
 
 @Component
 export default class Post extends Vue {
@@ -50,6 +57,11 @@ export default class Post extends Vue {
   private async deletePost() {
     await this.$store.dispatch("deletePost", this.postId);
     this.$router.push('/list');
+  }
+
+  private async like() {
+    const userId = Number(localStorage.getItem("userId"));
+    await this.$store.dispatch("likePost", { userId: userId, postsId: this.postId });
   }
 }
 </script>
