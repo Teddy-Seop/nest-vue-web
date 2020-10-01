@@ -9,8 +9,13 @@
         <div class="mt-12 contents">{{ this.post.contents }}</div>
         <v-divider></v-divider>
         <v-row v-if="isWriter">
-          <v-col class="float-left">
+          <v-col v-if="isLikes === false" class="float-left">
+            <v-btn icon @click="like()"><v-icon>mdi-heart-outline</v-icon></v-btn>
+            <span>{{ this.post.likes.length }}</span>
+          </v-col>
+          <v-col v-if="isLikes === true" class="float-left">
             <v-btn icon @click="like()"><v-icon>mdi-heart</v-icon></v-btn>
+            <span>{{ this.post.likes.length }}</span>
           </v-col>
           <v-col class="float-right">
             <v-btn class="ma-2" @click="editPost()">EDIT</v-btn>
@@ -33,21 +38,17 @@ import { ILikes } from '../types/likes';
 @Component
 export default class Post extends Vue {
   private postId: number;
+  private userId: number;
   private post: IPost = {} as IPost;
   private isWriter = false;
+  private isLikes = false;
 
   private async created() {
     this.postId = Number(this.$route.params.id);
+    this.userId = Number(localStorage.getItem('userId'))
     this.post = await this.$store.dispatch("getPost", this.postId);
     this.checkUser();
-  }
-
-  private checkUser() {
-    if (this.post.user.id === Number(localStorage.getItem('userId'))) {
-      this.isWriter = true;
-    } else {
-      this.isWriter = false;
-    }
+    this.checkLikes();
   }
 
   private async editPost() {
@@ -60,8 +61,35 @@ export default class Post extends Vue {
   }
 
   private async like() {
-    const userId = Number(localStorage.getItem("userId"));
-    await this.$store.dispatch("likePost", { userId: userId, postsId: this.postId });
+    if (this.isLikes) {
+      await this.$store.dispatch("unlikePost", { userId: this.userId, postsId: this.postId });
+      this.isLikes = false;
+    } else {
+      await this.$store.dispatch("likePost", { userId: this.userId, postsId: this.postId });
+      this.isLikes = true;
+    }
+  }
+
+  private checkUser() {
+    if (this.post.user.id === this.userId) {
+      this.isWriter = true;
+    } else {
+      this.isWriter = false;
+    }
+  }
+
+  private checkLikes() {
+    let check = false;
+    this.post.likes.map(elem => {
+      if (elem.userId === this.userId) {
+        check = true;
+      }
+    })
+    if (check) {
+      this.isLikes = true;
+    } else {
+      this.isLikes = false;
+    }
   }
 }
 </script>
