@@ -8,16 +8,18 @@
         <v-divider></v-divider>
         <div class="mt-12 contents">{{ this.post.contents }}</div>
         <v-divider></v-divider>
-        <v-row v-if="isWriter">
+        <v-row>
           <v-col v-if="isLikes === false" class="float-left">
-            <v-btn icon @click="like()"><v-icon>mdi-heart-outline</v-icon></v-btn>
+            <v-btn icon @click="like()">
+              <v-icon>mdi-heart-outline</v-icon>
+            </v-btn>
             <span>{{ this.likeCount }}</span>
           </v-col>
           <v-col v-if="isLikes === true" class="float-left">
             <v-btn icon @click="like()"><v-icon>mdi-heart</v-icon></v-btn>
             <span>{{ this.likeCount }}</span>
           </v-col>
-          <v-col class="float-right">
+          <v-col v-if="isWriter === true" class="float-right">
             <v-btn class="ma-2" @click="editPost()">EDIT</v-btn>
             <v-btn class="ma-2" @click="deletePost()">DELETE</v-btn>
           </v-col>
@@ -30,23 +32,21 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import router from "../router/index";
 
 import { IPost } from "@/types/post";
-import { ILikes } from '../types/likes';
 
 @Component
 export default class Post extends Vue {
   private postId: number;
   private userId: number;
   private post: IPost = {} as IPost;
-  private isWriter = false;
-  private isLikes = false;
-  private likeCount: number;
+  private isWriter: boolean = false;
+  private isLikes: boolean = false;
+  private likeCount: number = 0;
 
   private async created() {
     this.postId = Number(this.$route.params.id);
-    this.userId = Number(localStorage.getItem('userId'))
+    this.userId = Number(localStorage.getItem("userId"));
     this.post = await this.$store.dispatch("getPost", this.postId);
     this.likeCount = this.post.likes.length;
     this.checkUser();
@@ -59,7 +59,7 @@ export default class Post extends Vue {
 
   private async deletePost() {
     await this.$store.dispatch("deletePost", this.postId);
-    this.$router.push('/list');
+    this.$router.push("/list");
   }
 
   private async like() {
@@ -88,7 +88,7 @@ export default class Post extends Vue {
       if (elem.userId === this.userId) {
         check = true;
       }
-    })
+    });
     if (check) {
       this.isLikes = true;
     } else {
