@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-card class="mx-auto text-center" max-width="500" outlined>
+      <v-card class="mx-auto text-center mb-7" max-width="500" outlined>
         <div class="pa-5">
           <h2>{{ post.title }}</h2>
         </div>
@@ -25,6 +25,20 @@
           </v-col>
         </v-row>
       </v-card>
+      <v-divider></v-divider>
+      <v-row>
+        <v-col cols="10">
+          <v-text-field v-model="comment" label="Comment"></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-btn @click="writeComment()">Comment</v-btn>
+        </v-col>
+      </v-row>
+      <template>
+        <div v-for="comment in commentsList" :key="comment.id">
+          <div>{{ comment.comment }}</div>
+        </div>
+      </template>
     </v-container>
   </div>
 </template>
@@ -34,6 +48,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 
 import { IPost } from "@/types/post";
+import { IComment } from '@/types/comments';
 
 @Component
 export default class Post extends Vue {
@@ -43,14 +58,23 @@ export default class Post extends Vue {
   private isWriter: boolean = false;
   private isLikes: boolean = false;
   private likeCount: number = 0;
+  private commentsList: IComment[] = [];
+  private comment: string = "";
 
   private async created() {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem("userId"));
     this.post = await this.$store.dispatch("getPost", this.postId);
+    await this.fetchCommentList()
     this.likeCount = this.post.likes.length;
-    this.checkUser();
-    this.checkLikes();
+    await this.checkUser();
+    await this.checkLikes();
+  }
+
+  private async fetchCommentList() {
+    await this.$store.dispatch("fetchComments", this.postId).then(res => {
+      this.commentsList = res;
+    })
   }
 
   private async editPost() {
@@ -72,6 +96,11 @@ export default class Post extends Vue {
       this.isLikes = true;
       this.likeCount++;
     }
+  }
+
+  private async writeComment() {
+    await this.$store.dispatch("writeComment", { comment: this.comment, userId: this.userId, postsId: this.postId });
+    await this.fetchCommentList();
   }
 
   private checkUser() {
