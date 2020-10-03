@@ -11,11 +11,11 @@
         <v-row v-if="isWriter">
           <v-col v-if="isLikes === false" class="float-left">
             <v-btn icon @click="like()"><v-icon>mdi-heart-outline</v-icon></v-btn>
-            <span>{{ this.post.likes.length }}</span>
+            <span>{{ this.likeCount }}</span>
           </v-col>
           <v-col v-if="isLikes === true" class="float-left">
             <v-btn icon @click="like()"><v-icon>mdi-heart</v-icon></v-btn>
-            <span>{{ this.post.likes.length }}</span>
+            <span>{{ this.likeCount }}</span>
           </v-col>
           <v-col class="float-right">
             <v-btn class="ma-2" @click="editPost()">EDIT</v-btn>
@@ -42,11 +42,13 @@ export default class Post extends Vue {
   private post: IPost = {} as IPost;
   private isWriter = false;
   private isLikes = false;
+  private likeCount: number;
 
   private async created() {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem('userId'))
     this.post = await this.$store.dispatch("getPost", this.postId);
+    this.likeCount = this.post.likes.length;
     this.checkUser();
     this.checkLikes();
   }
@@ -64,9 +66,11 @@ export default class Post extends Vue {
     if (this.isLikes) {
       await this.$store.dispatch("unlikePost", { userId: this.userId, postsId: this.postId });
       this.isLikes = false;
+      this.likeCount--;
     } else {
       await this.$store.dispatch("likePost", { userId: this.userId, postsId: this.postId });
       this.isLikes = true;
+      this.likeCount++;
     }
   }
 
