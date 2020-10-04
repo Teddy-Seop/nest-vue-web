@@ -40,6 +40,11 @@
             <div>
               <span class="mr-5">{{ comment.user.name }}</span>
               <span>{{ comment.createdAt | dateTime(comment.createdAt) }}</span>
+              <span class="float-right" v-if="comment.userId === userId">
+                <v-btn icon @click="deleteComment(comment.id)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </span>
             </div>
             <div>{{ comment.comment }}</div>
           </div>
@@ -73,7 +78,7 @@ export default class Post extends Vue {
     this.post = await this.$store.dispatch("getPost", this.postId);
     await this.fetchCommentList()
     this.likeCount = this.post.likes.length;
-    await this.checkUser();
+    await this.checkPostWriter();
     await this.checkLikes();
   }
 
@@ -109,7 +114,12 @@ export default class Post extends Vue {
     await this.fetchCommentList();
   }
 
-  private checkUser() {
+  private async deleteComment(id: number) {
+    await this.$store.dispatch("deleteComment", id);
+    await this.fetchCommentList();
+  }
+
+  private checkPostWriter() {
     if (this.post.user.id === this.userId) {
       this.isWriter = true;
     } else {

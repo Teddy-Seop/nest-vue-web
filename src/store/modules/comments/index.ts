@@ -8,6 +8,9 @@ const actions = {
   writeComment: (context: any, comment: IComment) => {
     return Axios.post(`http://localhost:3000/comments`, comment);
   },
+  deleteComment: (context: any, id: number) => {
+    return Axios.delete(`http://localhost:3000/comments/${id}`);
+  }
 };
 
 export default {
