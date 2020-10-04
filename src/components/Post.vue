@@ -36,7 +36,13 @@
       </v-row>
       <template>
         <div v-for="comment in commentsList" :key="comment.id">
-          <div>{{ comment.comment }}</div>
+          <div class="comment">
+            <div>
+              <span class="mr-5">{{ comment.user.name }}</span>
+              <span>{{ comment.createdAt | dateTime(comment.createdAt) }}</span>
+            </div>
+            <div>{{ comment.comment }}</div>
+          </div>
         </div>
       </template>
     </v-container>
@@ -130,5 +136,10 @@ export default class Post extends Vue {
 <style scoped lang="scss">
 .contents {
   height: 500px;
+}
+.comment {
+  border: 1px solid white;
+  margin-bottom: 10px;
+  padding: 5px;
 }
 </style>
