@@ -3,14 +3,20 @@
     <template v-slot:default>
       <thead>
         <tr>
-          <th class="text-left">Title</th>
-          <th class="text-left">User</th>
+          <th class="text-center">Title</th>
+          <th class="text-center">User</th>
+          <th class="text-center">Comment count</th>
+          <th class="text-center">Like count</th>
+          <th class="text-center">Created</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in posts" :key="item.id" @click="movePost(item.id)">
-          <td>{{ item.title }}</td>
-          <td>{{ item.user.name }}</td>
+          <td class="text-center">{{ item.title }}</td>
+          <td class="text-center">{{ item.writer }}</td>
+          <td class="text-center">{{ item.commentCount }}</td>
+          <td class="text-center">{{ item.likeCount }}</td>
+          <td class="text-center">{{ item.createdAt }}</td>
         </tr>
       </tbody>
     </template>
@@ -29,6 +35,7 @@ export default class List extends Vue {
   async created() {
     await this.$store.dispatch("getPosts").then(res => {
       this.posts = res;
+      console.log(this.posts);
     });
   }
 
