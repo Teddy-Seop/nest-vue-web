@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Login from "@/views/Login.vue";
+import Main from "../views/Main.vue";
 import Home from "../views/Home.vue";
 import List from "../views/List.vue";
 import Mypage from "../views/Mypage.vue";
@@ -23,6 +24,11 @@ const routes: Array<RouteConfig> = [
     meta: { requireAuth: true },
     children: [
       // views
+      {
+        path: "/main",
+        name: "Main",
+        component: Main,
+      },
       {
         path: "/list",
         name: "List",
@@ -65,7 +71,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (localStorage.getItem("userId") !== null && Vue.$cookies.get("access_token")) {
-      next("/home");
+      next("/main");
     } else {
       next();
     }

@@ -32,7 +32,7 @@ export default class Login extends Vue {
       if (this.$store.getters.getUserInfo.id !== '') {
         localStorage.setItem("userId", this.$store.getters.getUserInfo.id);
         Vue.$cookies.set("access_token", this.$store.getters.getUserInfo.accessToken, "1h");
-        this.$router.push("home");
+        this.$router.push("main");
       }
     }
   }

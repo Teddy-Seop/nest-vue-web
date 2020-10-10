@@ -17,6 +17,12 @@ const actions = {
   deletePost: (context: any, id: number) => {
     return Axios.delete(`http://localhost:3000/posts/${id}`).then(res => res.data);
   },
+  getMostLikes: (context: any) => {
+    return Axios.get(`http://localhost:3000/posts/top/likes`).then(res => res.data);
+  },
+  getMostComments: (context: any) => {
+    return Axios.get(`http://localhost:3000/posts/top/comments`).then(res => res.data);
+  }
 };
 
 export default {
