@@ -1,5 +1,5 @@
 import { IUser } from "@/types/user";
-import { ILikes } from './likes';
+import { ILikes } from "./likes";
 
 export interface IPost {
   id: number;
@@ -7,5 +7,15 @@ export interface IPost {
   contents: string;
   user: IUser;
   likes: ILikes[];
+  createdAt: Date;
+}
+
+export interface IPostList {
+  id: number;
+  title: string;
+  contents: string;
+  commentCount: number;
+  likeCount: number;
+  writer: string;
   createdAt: Date;
 }

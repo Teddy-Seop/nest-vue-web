@@ -78,7 +78,7 @@ import Component from "vue-class-component";
 export default class Home extends Vue {
   drawer = false;
   items = [
-    { icon: "mdi-home", text: "HOME", link: "/home" },
+    { icon: "mdi-home", text: "MAIN", link: "/main" },
     { icon: "mdi-clipboard-text-outline", text: "LIST", link: "/list" },
     { icon: "mdi-account-circle", text: "MyPage", link: "/mypage" }
   ];

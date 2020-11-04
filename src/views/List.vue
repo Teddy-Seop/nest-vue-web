@@ -25,18 +25,38 @@
 
 <script lang="ts">
 import Vue from "vue";
+import gql from "graphql-tag";
 import Component from "vue-class-component";
-import { IPost } from "@/types/post";
+import { IPostList } from "@/types/post";
 
 @Component
 export default class List extends Vue {
-  private posts: IPost[] = [];
+  private posts: IPostList[] = [];
 
-  async created() {
-    await this.$store.dispatch("getPosts").then(res => {
-      this.posts = res;
-      console.log(this.posts);
-    });
+  async mounted() {
+    await this.fetchPosts();
+  }
+
+  async fetchPosts() {
+    await this.$apollo
+      .query({
+        query: gql`
+          query getPostList {
+            getPostList {
+              id
+              title
+              contents
+              commentCount
+              likeCount
+              writer
+              createdAt
+            }
+          }
+        `
+      })
+      .then(res => {
+        this.posts = res.data.getPostList;
+      });
   }
 
   async movePost(id: string) {

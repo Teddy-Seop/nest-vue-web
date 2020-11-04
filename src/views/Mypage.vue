@@ -9,11 +9,5 @@ import Vue from "vue";
 import Component from 'vue-class-component';
 
 @Component
-export default class Mypage extends Vue {
-
-}
+export default class Mypage extends Vue { }
 </script>
-
-<style>
-
-</style>
