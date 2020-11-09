@@ -2,29 +2,30 @@
   <v-container if="isLoading">
     <v-simple-table :fixed-header="false" class="ma-10 pa-5">
       <thead>
-          <tr>
-            <th class="text-center">Title</th>
-            <th class="text-center">User</th>
-            <th class="text-center">Comment count</th>
-            <th class="text-center">Like count</th>
-            <th class="text-center">Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in posts" :key="item.id" @click="movePost(item.id)">
-            <td class="text-center">{{ item.title }}</td>
-            <td class="text-center">{{ item.writer }}</td>
-            <td class="text-center">{{ item.commentCount }}</td>
-            <td class="text-center">{{ item.likeCount }}</td>
-            <td class="text-center">{{ item.createdAt }}</td>
-          </tr>
-        </tbody>
+        <tr>
+          <th class="text-center">Title</th>
+          <th class="text-center">User</th>
+          <th class="text-center">Comment count</th>
+          <th class="text-center">Like count</th>
+          <th class="text-center">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in posts" :key="item.id" @click="movePost(item.id)">
+          <td class="text-center">{{ item.title }}</td>
+          <td class="text-center">{{ item.writer }}</td>
+          <td class="text-center">{{ item.commentCount }}</td>
+          <td class="text-center">{{ item.likeCount }}</td>
+          <td class="text-center">{{ item.createdAt }}</td>
+        </tr>
+      </tbody>
     </v-simple-table>
     <v-pagination
       v-model="page"
       class="my-4"
-      :length="page"
+      :length="pageLength"
       :total-visible="10"
+      :click="fetchPosts(page)"
     ></v-pagination>
   </v-container>
 </template>
@@ -39,32 +40,40 @@ import { IPostList } from "@/types/post";
 export default class List extends Vue {
   private isLoading: boolean = false;
   private posts: IPostList[] = [];
-  private page: number = 0;
+  private page: number = 1;
+  private pageLength: number = 1;
 
   async mounted() {
-    await this.fetchPosts();
+    await this.fetchPosts(this.page);
   }
 
-  async fetchPosts() {
+  async fetchPosts(page?: number) {
+    this.isLoading = false;
     await this.$apollo
       .query({
         query: gql`
-          query getPostList {
-            getPostList {
-              id
-              title
-              contents
-              commentCount
-              likeCount
-              writer
-              createdAt
+          query($page: Int!) {
+            getPostList(page: $page) {
+              postList {
+                id
+                title
+                contents
+                commentCount
+                likeCount
+                writer
+                createdAt
+              }
+              totalCount
             }
           }
-        `
+        `,
+        variables: {
+          page: page
+        }
       })
       .then(res => {
-        this.posts = res.data.getPostList;
-        this.page = Math.ceil(this.posts.length / 10);
+        this.posts = res.data.getPostList.postList;
+        this.pageLength = Math.ceil(res.data.getPostList.totalCount / 30);
         this.isLoading = true;
       });
   }
