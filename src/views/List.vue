@@ -1,6 +1,6 @@
 <template>
-  <v-simple-table :fixed-header="false" class="ma-10 pa-5">
-    <template v-slot:default>
+  <v-container if="isLoading">
+    <v-simple-table :fixed-header="false" class="ma-10 pa-5">
       <thead>
         <tr>
           <th class="text-center">Title</th>
@@ -19,8 +19,15 @@
           <td class="text-center">{{ item.createdAt }}</td>
         </tr>
       </tbody>
-    </template>
-  </v-simple-table>
+    </v-simple-table>
+    <v-pagination
+      v-model="page"
+      class="my-4"
+      :length="pageLength"
+      :total-visible="10"
+      :click="fetchPosts(page)"
+    ></v-pagination>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -31,31 +38,43 @@ import { IPostList } from "@/types/post";
 
 @Component
 export default class List extends Vue {
+  private isLoading: boolean = false;
   private posts: IPostList[] = [];
+  private page: number = 1;
+  private pageLength: number = 1;
 
   async mounted() {
-    await this.fetchPosts();
+    await this.fetchPosts(this.page);
   }
 
-  async fetchPosts() {
+  async fetchPosts(page?: number) {
+    this.isLoading = false;
     await this.$apollo
       .query({
         query: gql`
-          query getPostList {
-            getPostList {
-              id
-              title
-              contents
-              commentCount
-              likeCount
-              writer
-              createdAt
+          query($page: Int!) {
+            getPostList(page: $page) {
+              postList {
+                id
+                title
+                contents
+                commentCount
+                likeCount
+                writer
+                createdAt
+              }
+              totalCount
             }
           }
-        `
+        `,
+        variables: {
+          page: page
+        }
       })
       .then(res => {
-        this.posts = res.data.getPostList;
+        this.posts = res.data.getPostList.postList;
+        this.pageLength = Math.ceil(res.data.getPostList.totalCount / 30);
+        this.isLoading = true;
       });
   }
 
