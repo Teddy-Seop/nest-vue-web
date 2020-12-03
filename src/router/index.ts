@@ -1,23 +1,16 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Login from "@/views/Login.vue";
-import Main from "../views/Main.vue";
-import Home from "../views/Home.vue";
-import List from "../views/List.vue";
-import Mypage from "../views/Mypage.vue";
-import Write from "@/components/Write.vue";
-import Post from "@/components/Post.vue";
-import Example from "../views/example/Example.vue";
+import Login from "@/login/Login.vue";
+import Main from "@/views/Main.vue";
+import Home from "@/views/Home.vue";
+import List from "@/post/component/List.vue";
+import Mypage from "@/mypage/Mypage.vue";
+import Write from "@/post/component/Write.vue";
+import Post from "@/post/component/Post.vue";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
-  {
-    path: "/example",
-    name: "Example",
-    component: Example,
-    meta: { requireAuth: false }
-  },
   {
     path: "/",
     name: "Login",

@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { IPost } from '@/types/post';
+import { IPost } from "@/post/type/post.interface";
 import Vue from "vue";
 import Component from "vue-class-component";
 
@@ -40,7 +40,7 @@ export default class Write extends Vue {
       id: Number(this.$route.params.postId),
       title: this.title,
       contents: this.contents,
-      userId: localStorage.getItem("userId"),
+      userId: localStorage.getItem("userId")
     };
     this.$store.dispatch("submitPost", post);
     this.$router.push("List");

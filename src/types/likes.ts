@@ -1,8 +1,8 @@
-import { IPost } from './post';
-import { IUser } from './user';
+import { IPost } from "../post/type/post.interface";
+import { IUser } from "./user";
 
 export interface ILikes {
-    id: number;
-    postId: number;
-    userId: number;
+  id: number;
+  postId: number;
+  userId: number;
 }

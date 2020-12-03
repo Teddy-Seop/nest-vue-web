@@ -1,5 +1,5 @@
 import { IUser } from "@/types/user";
-import { ILikes } from "./likes";
+import { ILikes } from "../../types/likes";
 
 export interface IPost {
   id: number;

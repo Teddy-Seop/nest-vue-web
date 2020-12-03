@@ -58,8 +58,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
-import { IPost } from "@/types/post";
-import { IComment } from '@/types/comments';
+import { IPost } from "@/post/type/post.interface";
+import { IComment } from "@/types/comments";
 
 @Component
 export default class Post extends Vue {
@@ -76,7 +76,7 @@ export default class Post extends Vue {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem("userId"));
     this.post = await this.$store.dispatch("getPost", this.postId);
-    await this.fetchCommentList()
+    await this.fetchCommentList();
     this.likeCount = this.post.likes.length;
     await this.checkPostWriter();
     await this.checkLikes();
@@ -85,11 +85,14 @@ export default class Post extends Vue {
   private async fetchCommentList() {
     await this.$store.dispatch("fetchComments", this.postId).then(res => {
       this.commentsList = res;
-    })
+    });
   }
 
   private async editPost() {
-    this.$router.push({ name: 'Write', params: { postId: this.postId.toString() } });
+    this.$router.push({
+      name: "Write",
+      params: { postId: this.postId.toString() }
+    });
   }
 
   private async deletePost() {
@@ -99,18 +102,28 @@ export default class Post extends Vue {
 
   private async like() {
     if (this.isLikes) {
-      await this.$store.dispatch("unlikePost", { userId: this.userId, postsId: this.postId });
+      await this.$store.dispatch("unlikePost", {
+        userId: this.userId,
+        postsId: this.postId
+      });
       this.isLikes = false;
       this.likeCount--;
     } else {
-      await this.$store.dispatch("likePost", { userId: this.userId, postsId: this.postId });
+      await this.$store.dispatch("likePost", {
+        userId: this.userId,
+        postsId: this.postId
+      });
       this.isLikes = true;
       this.likeCount++;
     }
   }
 
   private async writeComment() {
-    await this.$store.dispatch("writeComment", { comment: this.comment, userId: this.userId, postsId: this.postId });
+    await this.$store.dispatch("writeComment", {
+      comment: this.comment,
+      userId: this.userId,
+      postsId: this.postId
+    });
     await this.fetchCommentList();
   }
 

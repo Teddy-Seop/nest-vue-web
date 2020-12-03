@@ -34,15 +34,14 @@
 import Vue from "vue";
 import gql from "graphql-tag";
 import Component from "vue-class-component";
-import { IPost, IPostList } from "@/types/post";
-import { ApolloQueryResult } from "apollo-client";
+import { IPostList } from "@/post/type/post.interface";
 
 @Component
 export default class List extends Vue {
-  private isLoading: boolean = false;
+  private isLoading = false;
   private posts: IPostList[] = [];
-  private page: number = 1;
-  private pageLength: number = 1;
+  private page = 1;
+  private pageLength = 1;
 
   async mounted() {
     await this.fetchPosts(this.page);
