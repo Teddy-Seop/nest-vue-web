@@ -28,7 +28,7 @@ const routes: Array<RouteConfig> = [
     path: "/home",
     name: "Home",
     component: Home,
-    meta: { requireAuth: true },
+    meta: { requireAuth: false },
     children: [
       // views
       {

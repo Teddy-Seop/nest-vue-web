@@ -13,9 +13,9 @@
       <tbody>
         <tr v-for="item in posts" :key="item.id" @click="movePost(item.id)">
           <td class="text-center">{{ item.title }}</td>
-          <td class="text-center">{{ item.writer }}</td>
-          <td class="text-center">{{ item.commentCount }}</td>
-          <td class="text-center">{{ item.likeCount }}</td>
+          <td class="text-center">{{ item.writer.name }}</td>
+          <td class="text-center">{{ item.commentCount.commentCount }}</td>
+          <td class="text-center">{{ item.likeCount.likeCount }}</td>
           <td class="text-center">{{ item.createdAt }}</td>
         </tr>
       </tbody>
@@ -34,7 +34,8 @@
 import Vue from "vue";
 import gql from "graphql-tag";
 import Component from "vue-class-component";
-import { IPostList } from "@/types/post";
+import { IPost, IPostList } from "@/types/post";
+import { ApolloQueryResult } from "apollo-client";
 
 @Component
 export default class List extends Vue {
@@ -49,33 +50,36 @@ export default class List extends Vue {
 
   async fetchPosts(page?: number) {
     this.isLoading = false;
-    await this.$apollo
-      .query({
-        query: gql`
-          query($page: Int!) {
-            getPostList(page: $page) {
-              postList {
-                id
-                title
-                contents
-                commentCount
-                likeCount
-                writer
-                createdAt
-              }
-              totalCount
+
+    const response = await this.$apollo.query({
+      query: gql`
+        query($page: Int!) {
+          postList(page: $page) {
+            id
+            title
+            contents
+            createdAt
+            writer {
+              name
+            }
+            commentCount {
+              commentCount
+            }
+            likeCount {
+              likeCount
             }
           }
-        `,
-        variables: {
-          page: page
+          totalPostCount
         }
-      })
-      .then(res => {
-        this.posts = res.data.getPostList.postList;
-        this.pageLength = Math.ceil(res.data.getPostList.totalCount / 30);
-        this.isLoading = true;
-      });
+      `,
+      variables: {
+        page: page
+      }
+    });
+
+    this.posts = response.data.postList;
+    this.pageLength = Math.ceil(response.data.totalPostCount / 30);
+    this.isLoading = true;
   }
 
   async movePost(id: string) {
