@@ -1,11 +1,11 @@
 import { IUser } from "@/types/user";
-import { ILikes } from "../../types/likes";
+import { ILikes } from "./like.interface";
 
 export interface IPost {
   id: number;
   title: string;
   contents: string;
-  user: IUser;
+  writer: IUser;
   likes: ILikes[];
   createdAt: Date;
 }

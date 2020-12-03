@@ -59,7 +59,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 
 import { IPost } from "@/post/type/post.interface";
-import { IComment } from "@/types/comments";
+import { IComment } from "@/post/type/comment.interface";
+import gql from "graphql-tag";
 
 @Component
 export default class Post extends Vue {
@@ -75,17 +76,45 @@ export default class Post extends Vue {
   private async created() {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem("userId"));
-    this.post = await this.$store.dispatch("getPost", this.postId);
-    await this.fetchCommentList();
-    this.likeCount = this.post.likes.length;
-    await this.checkPostWriter();
-    await this.checkLikes();
+    // this.likeCount = this.post.likes.length;
+    await this.fetchPost();
+    // await this.checkPostWriter();
+    // await this.checkLikes();
   }
 
-  private async fetchCommentList() {
-    await this.$store.dispatch("fetchComments", this.postId).then(res => {
-      this.commentsList = res;
+  private async fetchPost() {
+    const response = await this.$apollo.query({
+      query: gql`
+        query($postId: Int!) {
+          post(postId: $postId) {
+            id
+            title
+            contents
+            writer {
+              id
+              email
+              name
+            }
+            likeCount {
+              likeCount
+            }
+            comments {
+              comment
+              user {
+                id
+                name
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        postId: this.postId
+      }
     });
+    this.post = response.data.post;
+    this.commentsList = response.data.post.comments;
+    this.likeCount = response.data.post.likeCount.likeCount;
   }
 
   private async editPost() {
@@ -124,16 +153,16 @@ export default class Post extends Vue {
       userId: this.userId,
       postsId: this.postId
     });
-    await this.fetchCommentList();
+    // await this.fetchCommentList();
   }
 
   private async deleteComment(id: number) {
     await this.$store.dispatch("deleteComment", id);
-    await this.fetchCommentList();
+    // await this.fetchCommentList();
   }
 
   private checkPostWriter() {
-    if (this.post.user.id === this.userId) {
+    if (this.post.writer.id === this.userId) {
       this.isWriter = true;
     } else {
       this.isWriter = false;
