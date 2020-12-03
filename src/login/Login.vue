@@ -23,6 +23,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Validate } from "vuelidate-property-decorators";
 import { required, email } from "vuelidate/lib/validators";
+import gql from "graphql-tag";
 
 @Component
 export default class Login extends Vue {
@@ -34,17 +35,28 @@ export default class Login extends Vue {
 
   private async submit() {
     if (this.$v.$invalid === false) {
-      const result = await this.$store.dispatch("login", {
-        email: this.email,
-        password: this.password
+      const response = await this.$apollo.query({
+        query: gql`
+          query($user: UserLoginInputType!) {
+            login(user: $user) {
+              accessToken
+              userId
+            }
+          }
+        `,
+        variables: {
+          user: {
+            email: this.email,
+            password: this.password
+          }
+        }
       });
-      if (this.$store.getters.getUserInfo.id !== "") {
-        localStorage.setItem("userId", this.$store.getters.getUserInfo.id);
-        Vue.$cookies.set(
-          "access_token",
-          this.$store.getters.getUserInfo.accessToken,
-          "1h"
-        );
+
+      if (response.data.login.accessToken === "fail") {
+        alert("login fail");
+      } else {
+        localStorage.setItem("userId", response.data.login.userId);
+        Vue.$cookies.set("access_token", response.data.login.accessToken, "1h");
         this.$router.push("main");
       }
     }

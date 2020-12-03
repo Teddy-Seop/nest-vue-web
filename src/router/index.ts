@@ -61,26 +61,26 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requireAuth)) {
-    if (
-      localStorage.getItem("userId") === null ||
-      Vue.$cookies.get("access_token") === null
-    ) {
-      next("/");
-    } else {
-      next();
-    }
-  } else {
-    if (
-      localStorage.getItem("userId") !== null &&
-      Vue.$cookies.get("access_token")
-    ) {
-      next("/main");
-    } else {
-      next();
-    }
-  }
-});
+// router.beforeEach((to, from, next) => {
+//   if (to.matched.some(record => record.meta.requireAuth)) {
+//     if (
+//       localStorage.getItem("userId") === null ||
+//       Vue.$cookies.get("access_token") === null
+//     ) {
+//       next("/");
+//     } else {
+//       next();
+//     }
+//   } else {
+//     if (
+//       localStorage.getItem("userId") &&
+//       Vue.$cookies.get("access_token")
+//     ) {
+//       next("/main");
+//     } else {
+//       next();
+//     }
+//   }
+// });
 
 export default router;
