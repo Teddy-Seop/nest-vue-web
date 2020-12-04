@@ -40,7 +40,7 @@
             <div>
               <span class="mr-5">{{ comment.user.name }}</span>
               <span>{{ comment.createdAt | dateTime(comment.createdAt) }}</span>
-              <span class="float-right" v-if="comment.userId === userId">
+              <span class="float-right" v-if="comment.user.id === userId">
                 <v-btn icon @click="deleteComment(comment.id)">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -101,7 +101,9 @@ export default class Post extends Vue {
               userId
             }
             comments {
+              id
               comment
+              createdAt
               user {
                 id
                 name
@@ -158,15 +160,58 @@ export default class Post extends Vue {
   }
 
   private async writeComment() {
-    await this.$store.dispatch("writeComment", {
-      comment: this.comment,
-      userId: this.userId,
-      postsId: this.postId
+    const response = await this.$apollo.mutate({
+      mutation: gql`
+        mutation($comment: SaveCommentInputType!) {
+          saveComment(comment: $comment) {
+            id
+            comment
+            createdAt
+            user {
+              id
+              name
+              email
+            }
+          }
+        }
+      `,
+      variables: {
+        comment: {
+          comment: this.comment,
+          postId: this.postId,
+          userId: this.userId
+        }
+      }
     });
+
+    this.commentsList = response.data.saveComment;
   }
 
-  private async deleteComment(id: number) {
-    await this.$store.dispatch("deleteComment", id);
+  private async deleteComment(commentId: number) {
+    const response = await this.$apollo.mutate({
+      mutation: gql`
+        mutation($comment: DeleteCommentInputType!) {
+          deleteComment(comment: $comment) {
+            id
+            comment
+            createdAt
+            user {
+              id
+              name
+              email
+            }
+          }
+        }
+      `,
+      variables: {
+        comment: {
+          id: commentId,
+          postId: this.postId
+        }
+      }
+    });
+
+    this.commentsList = response.data.deleteComment;
   }
 
   private checkPostWriter() {
