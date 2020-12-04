@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { IPost } from "@/types/post";
+import { IPost } from "@/post/type/post.interface";
 import Vue from "vue";
 import Component from "vue-class-component";
 
