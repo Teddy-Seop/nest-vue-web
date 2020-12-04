@@ -1,4 +1,4 @@
-export interface ILikes {
+export interface ILike {
   id: number;
   postId: number;
   userId: number;

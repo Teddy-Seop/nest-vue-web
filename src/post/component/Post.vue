@@ -61,6 +61,7 @@ import Component from "vue-class-component";
 import { IPost } from "@/post/type/post.interface";
 import { IComment } from "@/post/type/comment.interface";
 import gql from "graphql-tag";
+import { ILike } from "../type/like.interface";
 
 @Component
 export default class Post extends Vue {
@@ -72,14 +73,14 @@ export default class Post extends Vue {
   private likeCount: number = 0;
   private commentsList: IComment[] = [];
   private comment: string = "";
+  private likeList: ILike[];
 
   private async created() {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem("userId"));
-    // this.likeCount = this.post.likes.length;
     await this.fetchPost();
-    // await this.checkPostWriter();
-    // await this.checkLikes();
+    await this.checkPostWriter();
+    await this.checkLikes();
   }
 
   private async fetchPost() {
@@ -95,8 +96,9 @@ export default class Post extends Vue {
               email
               name
             }
-            likeCount {
-              likeCount
+            likes {
+              postId
+              userId
             }
             comments {
               comment
@@ -114,7 +116,8 @@ export default class Post extends Vue {
     });
     this.post = response.data.post;
     this.commentsList = response.data.post.comments;
-    this.likeCount = response.data.post.likeCount.likeCount;
+    this.likeList = response.data.post.likes;
+    this.likeCount = this.likeList.length;
   }
 
   private async editPost() {
@@ -130,21 +133,28 @@ export default class Post extends Vue {
   }
 
   private async like() {
+    let query: string = "";
+
     if (this.isLikes) {
-      await this.$store.dispatch("unlikePost", {
-        userId: this.userId,
-        postsId: this.postId
-      });
+      query = "mutation($like: LikeInputType!) { deleteLike(like: $like) }";
       this.isLikes = false;
       this.likeCount--;
     } else {
-      await this.$store.dispatch("likePost", {
-        userId: this.userId,
-        postsId: this.postId
-      });
+      query = "mutation($like: LikeInputType!) { saveLike(like: $like) }";
       this.isLikes = true;
       this.likeCount++;
     }
+    await this.$apollo.mutate({
+      mutation: gql`
+        ${query}
+      `,
+      variables: {
+        like: {
+          postId: this.postId,
+          userId: this.userId
+        }
+      }
+    });
   }
 
   private async writeComment() {
@@ -153,12 +163,10 @@ export default class Post extends Vue {
       userId: this.userId,
       postsId: this.postId
     });
-    // await this.fetchCommentList();
   }
 
   private async deleteComment(id: number) {
     await this.$store.dispatch("deleteComment", id);
-    // await this.fetchCommentList();
   }
 
   private checkPostWriter() {
@@ -170,17 +178,11 @@ export default class Post extends Vue {
   }
 
   private checkLikes() {
-    let check = false;
-    this.post.likes.map(elem => {
-      if (elem.userId === this.userId) {
-        check = true;
+    this.likeList.map(like => {
+      if (like.userId === this.userId) {
+        this.isLikes = true;
       }
     });
-    if (check) {
-      this.isLikes = true;
-    } else {
-      this.isLikes = false;
-    }
   }
 }
 </script>
