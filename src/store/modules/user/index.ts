@@ -1,7 +1,6 @@
 import Axios from "axios";
 
 import { IUser } from "@/types/user";
-import router from "@/router";
 
 const state = {
   user: {
