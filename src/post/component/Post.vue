@@ -40,7 +40,7 @@
             <div>
               <span class="mr-5">{{ comment.user.name }}</span>
               <span>{{ comment.createdAt | dateTime(comment.createdAt) }}</span>
-              <span class="float-right" v-if="comment.userId === userId">
+              <span class="float-right" v-if="comment.user.id === userId">
                 <v-btn icon @click="deleteComment(comment.id)">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -61,6 +61,7 @@ import Component from "vue-class-component";
 import { IPost } from "@/post/type/post.interface";
 import { IComment } from "@/post/type/comment.interface";
 import gql from "graphql-tag";
+import { ILike } from "../type/like.interface";
 
 @Component
 export default class Post extends Vue {
@@ -72,14 +73,14 @@ export default class Post extends Vue {
   private likeCount: number = 0;
   private commentsList: IComment[] = [];
   private comment: string = "";
+  private likeList: ILike[];
 
   private async created() {
     this.postId = Number(this.$route.params.id);
     this.userId = Number(localStorage.getItem("userId"));
-    // this.likeCount = this.post.likes.length;
     await this.fetchPost();
-    // await this.checkPostWriter();
-    // await this.checkLikes();
+    await this.checkPostWriter();
+    await this.checkLikes();
   }
 
   private async fetchPost() {
@@ -95,11 +96,14 @@ export default class Post extends Vue {
               email
               name
             }
-            likeCount {
-              likeCount
+            likes {
+              postId
+              userId
             }
             comments {
+              id
               comment
+              createdAt
               user {
                 id
                 name
@@ -114,7 +118,8 @@ export default class Post extends Vue {
     });
     this.post = response.data.post;
     this.commentsList = response.data.post.comments;
-    this.likeCount = response.data.post.likeCount.likeCount;
+    this.likeList = response.data.post.likes;
+    this.likeCount = this.likeList.length;
   }
 
   private async editPost() {
@@ -130,35 +135,83 @@ export default class Post extends Vue {
   }
 
   private async like() {
+    let query: string = "";
+
     if (this.isLikes) {
-      await this.$store.dispatch("unlikePost", {
-        userId: this.userId,
-        postsId: this.postId
-      });
+      query = "mutation($like: LikeInputType!) { deleteLike(like: $like) }";
       this.isLikes = false;
       this.likeCount--;
     } else {
-      await this.$store.dispatch("likePost", {
-        userId: this.userId,
-        postsId: this.postId
-      });
+      query = "mutation($like: LikeInputType!) { saveLike(like: $like) }";
       this.isLikes = true;
       this.likeCount++;
     }
+    await this.$apollo.mutate({
+      mutation: gql`
+        ${query}
+      `,
+      variables: {
+        like: {
+          postId: this.postId,
+          userId: this.userId
+        }
+      }
+    });
   }
 
   private async writeComment() {
-    await this.$store.dispatch("writeComment", {
-      comment: this.comment,
-      userId: this.userId,
-      postsId: this.postId
+    const response = await this.$apollo.mutate({
+      mutation: gql`
+        mutation($comment: SaveCommentInputType!) {
+          saveComment(comment: $comment) {
+            id
+            comment
+            createdAt
+            user {
+              id
+              name
+              email
+            }
+          }
+        }
+      `,
+      variables: {
+        comment: {
+          comment: this.comment,
+          postId: this.postId,
+          userId: this.userId
+        }
+      }
     });
-    // await this.fetchCommentList();
+
+    this.commentsList = response.data.saveComment;
   }
 
-  private async deleteComment(id: number) {
-    await this.$store.dispatch("deleteComment", id);
-    // await this.fetchCommentList();
+  private async deleteComment(commentId: number) {
+    const response = await this.$apollo.mutate({
+      mutation: gql`
+        mutation($comment: DeleteCommentInputType!) {
+          deleteComment(comment: $comment) {
+            id
+            comment
+            createdAt
+            user {
+              id
+              name
+              email
+            }
+          }
+        }
+      `,
+      variables: {
+        comment: {
+          id: commentId,
+          postId: this.postId
+        }
+      }
+    });
+
+    this.commentsList = response.data.deleteComment;
   }
 
   private checkPostWriter() {
@@ -170,17 +223,11 @@ export default class Post extends Vue {
   }
 
   private checkLikes() {
-    let check = false;
-    this.post.likes.map(elem => {
-      if (elem.userId === this.userId) {
-        check = true;
+    this.likeList.map(like => {
+      if (like.userId === this.userId) {
+        this.isLikes = true;
       }
     });
-    if (check) {
-      this.isLikes = true;
-    } else {
-      this.isLikes = false;
-    }
   }
 }
 </script>
