@@ -24,6 +24,7 @@ import Component from "vue-class-component";
 import { Validate } from "vuelidate-property-decorators";
 import { required, email } from "vuelidate/lib/validators";
 import gql from "graphql-tag";
+import { ILoginUser } from "./type/login.interface";
 
 @Component
 export default class Login extends Vue {
@@ -41,6 +42,8 @@ export default class Login extends Vue {
             login(user: $user) {
               accessToken
               userId
+              email
+              name
             }
           }
         `,
@@ -57,6 +60,15 @@ export default class Login extends Vue {
       } else {
         localStorage.setItem("userId", response.data.login.userId);
         Vue.$cookies.set("access_token", response.data.login.accessToken, "1h");
+
+        const user: ILoginUser = {
+          id: response.data.login.userId,
+          email: response.data.login.email,
+          name: response.data.login.name,
+          accessToken: response.data.login.accessToken
+        };
+
+        this.$store.dispatch("login", user);
         this.$router.push("main");
       }
     }
