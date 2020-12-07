@@ -17,7 +17,7 @@
               <v-row>
                 <v-col class="float-left">
                   <v-icon>mdi-comment-processing</v-icon>
-                  <span class="ml-2">{{ item.comments }}</span>
+                  <span class="ml-2">{{ item.commentCount.commentCount }}</span>
                 </v-col>
               </v-row>
             </v-card>
@@ -40,7 +40,7 @@
               <v-row>
                 <v-col class="float-left">
                   <v-icon>mdi-heart</v-icon>
-                  <span class="ml-2">{{ item.likes }}</span>
+                  <span class="ml-2">{{ item.likeCount.likeCount }}</span>
                 </v-col>
               </v-row>
             </v-card>
@@ -52,19 +52,55 @@
 </template>
 
 <script lang="ts">
-import { IPost } from "@/post/type/post.interface";
+import { IPostList } from "@/post/type/post.interface";
+import gql from "graphql-tag";
 import Vue from "vue";
 import Component from "vue-class-component";
 
 @Component
 export default class Main extends Vue {
-  private mostCommentsList: IPost[] = [];
-  private mostLikesList: IPost[] = [];
+  private mostCommentsList: IPostList[] = [];
+  private mostLikesList: IPostList[] = [];
   private name: string = "kim";
 
   private async mounted() {
-    this.mostCommentsList = await this.$store.dispatch("getMostComments");
-    this.mostLikesList = await this.$store.dispatch("getMostLikes");
+    await this.fetchTopPost();
+  }
+
+  private async fetchTopPost() {
+    const response = await this.$apollo.query({
+      query: gql`
+        query topPost {
+          topCommentPostList {
+            id
+            title
+            contents
+            createdAt
+            writer {
+              name
+            }
+            commentCount {
+              commentCount
+            }
+          }
+          topLikePostList {
+            id
+            title
+            contents
+            createdAt
+            writer {
+              name
+            }
+            likeCount {
+              likeCount
+            }
+          }
+        }
+      `
+    });
+
+    this.mostCommentsList = response.data.topCommentPostList;
+    this.mostLikesList = response.data.topLikePostList;
   }
 }
 </script>

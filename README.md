@@ -6,6 +6,14 @@
 - GraphQL
 - MySQL 5.7
 
+## TODO
+
+- Webpack 적용
+
+## DONE
+
+- GraphQL 적용
+
 ## Project setup
 
 ```
