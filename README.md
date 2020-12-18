@@ -8,8 +8,6 @@
 
 ## TODO
 
-- Webpack 적용
-
 ## DONE
 
 - GraphQL 적용
