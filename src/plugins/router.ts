@@ -4,12 +4,14 @@ import Home from "@/views/Home.vue";
 import { PostRouter } from "@/post";
 import { MypageRouter } from "@/mypage";
 import { LoginRouter } from "@/login";
+import { SignupRouter } from "@/signup";
 import MainRouter from "@/main/main.router";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   ...LoginRouter,
+  ...SignupRouter,
   {
     path: "/home",
     name: "Home",
