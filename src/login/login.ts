@@ -63,7 +63,7 @@ export default class Login extends Vue {
     if (!this.$v.email.required) {
       error.push("Email is required");
     } else if (!this.$v.email.email) {
-      error.push("Fomat should be email");
+      error.push("Format should be email");
     }
     return error;
   }
