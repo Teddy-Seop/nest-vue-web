@@ -23,7 +23,7 @@
       <v-col cols="4">
         <v-text-field
           label="PW"
-          v-model="signupInfo.passwordCheck"
+          v-model="passwordCheck"
           :rules="passwordCheckFormatValidation()"
           type="password"
         ></v-text-field>
