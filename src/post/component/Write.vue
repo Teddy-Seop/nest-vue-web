@@ -21,6 +21,7 @@
 
 <script lang="ts">
 import { IPost } from "@/post/type/post.interface";
+import gql from "graphql-tag";
 import Vue from "vue";
 import Component from "vue-class-component";
 
@@ -35,19 +36,45 @@ export default class Write extends Vue {
     }
   }
 
-  private submit() {
+  private async submit() {
     const post = {
       id: Number(this.$route.params.postId),
       title: this.title,
       contents: this.contents,
-      userId: localStorage.getItem("userId")
+      userId: Number(localStorage.getItem("userId")),
     };
-    this.$store.dispatch("submitPost", post);
+
+    await this.$apollo.mutate({
+      mutation: gql`
+        mutation savePost($post: PostInputType!) {
+          savePost(post: $post)
+        }
+      `,
+      variables: {
+        post,
+      },
+    });
     this.$router.push("List");
   }
 
   private async editSetting(postId: number) {
-    const post: IPost = await this.$store.dispatch("getPost", postId);
+    const { data } = await this.$apollo.query({
+      query: gql`
+        query getPost($postId: Int!) {
+          post(postId: $postId) {
+            id
+            title
+            contents
+            userId
+            createdAt
+          }
+        }
+      `,
+      variables: {
+        postId,
+      },
+    });
+    const post: IPost = data.post;
     this.title = post.title;
     this.contents = post.contents;
   }

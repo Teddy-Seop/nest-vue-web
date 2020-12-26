@@ -72,8 +72,9 @@ export default class List extends Vue {
         }
       `,
       variables: {
-        page: page
-      }
+        page: page,
+      },
+      fetchPolicy: "no-cache",
     });
 
     this.posts = response.data.postList;
