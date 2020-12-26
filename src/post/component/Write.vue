@@ -13,7 +13,7 @@
         ></v-textarea>
       </v-row>
       <v-btn class="float-right mr-10" @click="submit">
-        <v-icon>SAVE</v-icon>
+        <v-icon>create</v-icon>
       </v-btn>
     </v-container>
   </v-form>
