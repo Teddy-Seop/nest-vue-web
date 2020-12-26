@@ -1,10 +1,46 @@
 <template>
   <v-form>
     <v-container>
-      <v-row class="ma-10">
+      <v-row class="ml-10">
         <v-text-field v-model="title" label="TITLE" required></v-text-field>
       </v-row>
-      <v-row class="ma-10">
+      <v-row>
+        <v-col>
+          <v-file-input
+            v-model="files"
+            color="deep-purple accent-4"
+            counter
+            label="File input"
+            multiple
+            placeholder="Select your files"
+            prepend-icon="mdi-paperclip"
+            outlined
+            :show-size="1000"
+            class="mx-10"
+            @change="upload()"
+          >
+            <template v-slot:selection="{ index, text }">
+              <v-chip
+                v-if="index < 2"
+                color="deep-purple accent-4"
+                dark
+                label
+                small
+              >
+                {{ text }}
+              </v-chip>
+
+              <span
+                v-else-if="index === 2"
+                class="overline grey--text text--darken-3 mx-2"
+              >
+                +{{ files.length - 2 }} File(s)
+              </span>
+            </template>
+          </v-file-input>
+        </v-col>
+      </v-row>
+      <v-row class="ml-10">
         <v-textarea
           v-model="contents"
           label="CONTENTS"
@@ -27,8 +63,9 @@ import Component from "vue-class-component";
 
 @Component
 export default class Write extends Vue {
-  title = "";
-  contents = "";
+  private title = "";
+  private contents = "";
+  private files: File[] = [];
 
   private async mounted() {
     if (this.$route.params.postId) {
