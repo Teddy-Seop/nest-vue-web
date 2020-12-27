@@ -25,5 +25,11 @@ export interface ISavePost {
   title: string;
   contents: string;
   userId: number;
-  files: File[];
+  files?: IUploadFile[];
+}
+
+export interface IUploadFile {
+  filename: string;
+  mimetype: string;
+  encoding: string;
 }

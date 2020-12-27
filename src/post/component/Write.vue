@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { IPost, ISavePost } from "@/post/type/post.interface";
+import { IPost, ISavePost, IUploadFile } from "@/post/type/post.interface";
 import gql from "graphql-tag";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -73,12 +73,21 @@ export default class Write extends Vue {
   }
 
   private async submit() {
+    const files: IUploadFile[] = [];
+
+    for (const file of this.files) {
+      files.push({
+        filename: "test",
+        mimetype: file.type,
+        encoding: "utf-8",
+      });
+    }
     const post: ISavePost = {
       id: Number(this.$route.params.postId),
       title: this.title,
       contents: this.contents,
       userId: Number(localStorage.getItem("userId")),
-      files: this.files,
+      files,
     };
 
     await this.$apollo.mutate({
