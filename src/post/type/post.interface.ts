@@ -19,3 +19,11 @@ export interface IPostList {
   writer: string;
   createdAt: Date;
 }
+
+export interface ISavePost {
+  id?: number;
+  title: string;
+  contents: string;
+  userId: number;
+  files: File[];
+}

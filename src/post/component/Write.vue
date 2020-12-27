@@ -17,7 +17,6 @@
             outlined
             :show-size="1000"
             class="mx-10"
-            @change="upload()"
           >
             <template v-slot:selection="{ index, text }">
               <v-chip
@@ -56,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { IPost } from "@/post/type/post.interface";
+import { IPost, ISavePost } from "@/post/type/post.interface";
 import gql from "graphql-tag";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -74,11 +73,12 @@ export default class Write extends Vue {
   }
 
   private async submit() {
-    const post = {
+    const post: ISavePost = {
       id: Number(this.$route.params.postId),
       title: this.title,
       contents: this.contents,
       userId: Number(localStorage.getItem("userId")),
+      files: this.files,
     };
 
     await this.$apollo.mutate({
@@ -91,7 +91,7 @@ export default class Write extends Vue {
         post,
       },
     });
-    this.$router.push("List");
+    await this.$router.push("List");
   }
 
   private async editSetting(postId: number) {
