@@ -113,8 +113,8 @@ export default class Post extends Vue {
         }
       `,
       variables: {
-        postId: this.postId
-      }
+        postId: this.postId,
+      },
     });
     this.post = response.data.post;
     this.commentsList = response.data.post.comments;
@@ -125,12 +125,21 @@ export default class Post extends Vue {
   private async editPost() {
     this.$router.push({
       name: "Write",
-      params: { postId: this.postId.toString() }
+      params: { postId: this.postId.toString() },
     });
   }
 
   private async deletePost() {
-    await this.$store.dispatch("deletePost", this.postId);
+    await this.$apollo.mutate({
+      mutation: gql`
+        mutation deletePost($postId: Int!) {
+          deletePost(postId: $postId)
+        }
+      `,
+      variables: {
+        postId: this.postId,
+      },
+    });
     this.$router.push("/list");
   }
 
@@ -153,9 +162,9 @@ export default class Post extends Vue {
       variables: {
         like: {
           postId: this.postId,
-          userId: this.userId
-        }
-      }
+          userId: this.userId,
+        },
+      },
     });
   }
 
@@ -179,9 +188,9 @@ export default class Post extends Vue {
         comment: {
           comment: this.comment,
           postId: this.postId,
-          userId: this.userId
-        }
-      }
+          userId: this.userId,
+        },
+      },
     });
 
     this.commentsList = response.data.saveComment;
@@ -206,9 +215,9 @@ export default class Post extends Vue {
       variables: {
         comment: {
           id: commentId,
-          postId: this.postId
-        }
-      }
+          postId: this.postId,
+        },
+      },
     });
 
     this.commentsList = response.data.deleteComment;
@@ -223,7 +232,7 @@ export default class Post extends Vue {
   }
 
   private checkLikes() {
-    this.likeList.map(like => {
+    this.likeList.map((like) => {
       if (like.userId === this.userId) {
         this.isLikes = true;
       }

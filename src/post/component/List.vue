@@ -25,7 +25,7 @@
       class="my-4"
       :length="pageLength"
       :total-visible="10"
-      :click="fetchPosts(page)"
+      @click="fetchPosts(page)"
     ></v-pagination>
   </v-container>
 </template>
@@ -43,14 +43,14 @@ export default class List extends Vue {
   private page = 1;
   private pageLength = 1;
 
-  async mounted() {
+  private async mounted() {
     await this.fetchPosts(this.page);
   }
 
-  async fetchPosts(page?: number) {
+  private async fetchPosts(page?: number) {
     this.isLoading = false;
 
-    const response = await this.$apollo.query({
+    const { data } = await this.$apollo.query({
       query: gql`
         query($page: Int!) {
           postList(page: $page) {
@@ -72,16 +72,17 @@ export default class List extends Vue {
         }
       `,
       variables: {
-        page: page
-      }
+        page: page,
+      },
+      fetchPolicy: "no-cache",
     });
 
-    this.posts = response.data.postList;
-    this.pageLength = Math.ceil(response.data.totalPostCount / 30);
+    this.posts = data.postList;
+    this.pageLength = Math.ceil(data.totalPostCount / 30);
     this.isLoading = true;
   }
 
-  async movePost(id: string) {
+  private async movePost(id: string) {
     this.$router.push({ name: "Post", params: { id: id } });
   }
 }

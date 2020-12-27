@@ -7,7 +7,7 @@ import { setContext } from "apollo-link-context";
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
-  uri: "http://localhost:3000/graphql"
+  uri: "http://localhost:3000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -18,8 +18,8 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : ""
-    }
+      authorization: token ? `Bearer ${token}` : "",
+    },
   };
 });
 
@@ -27,9 +27,9 @@ const authLink = setContext((_, { headers }) => {
 export const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-  connectToDevTools: true
+  connectToDevTools: true,
 });
 
 export const apolloProvider = new VueApollo({
-  defaultClient: apolloClient
+  defaultClient: apolloClient,
 });
