@@ -35,8 +35,12 @@ import Vue from "vue";
 import gql from "graphql-tag";
 import Component from "vue-class-component";
 import { IPostList } from "@/post/type/post.interface";
+import TestMixin from '@/mixins/test-mixin';
 
-@Component
+@Component({
+  name: 'List',
+  mixins: [TestMixin]
+})
 export default class List extends Vue {
   private isLoading = false;
   private posts: IPostList[] = [];
@@ -44,6 +48,7 @@ export default class List extends Vue {
   private pageLength = 1;
 
   private async mounted() {
+    console.log('List component')
     await this.fetchPosts(this.page);
   }
 
